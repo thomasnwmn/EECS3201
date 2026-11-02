@@ -1,7 +1,7 @@
 // previously submitted in lab 2 but adapted to allow digits
 module SevenSegment(input [3:0] digit, output reg [6:0] segments);
 
-	always @(*) begin
+	always @(*) begin // whenever digits change, update
 		case (digit)
 			4'd0: segments = 7'b1000000;
 			4'd1: segments = 7'b1111001;
@@ -21,7 +21,7 @@ endmodule
 
 module clock_divider (input clk, input reset, output reg tick);
 
-	reg [25:0] count;
+	reg [25:0] count; // 26 slots to fit up to ~66 million values
 	
 	initial begin
 		count = 0;
@@ -29,25 +29,25 @@ module clock_divider (input clk, input reset, output reg tick);
 	
 	end
 	
-	
+	// runs only when clk is on the positive edge
 	always @(posedge clk) begin
 		if (reset) begin
 			count <= 0;
-			tick <= 0;
+			tick <= 0; // tick tells it when a second has been counted in clock cycles
 		end
 		else if (count == 49999999) begin
 			count <= 0;
-			tick <= 1;
+			tick <= 1; // end reached, telling the computer to tick
 		end
 		else begin
-			count <= count + 1;
+			count <= count + 1; // counting clock cycles
 			tick <= 0;
 		end
 	end
 
 endmodule
 
-module shot_clock (
+module Lab4 (
 	input MAX10_CLK1_50,
 	input [1:0] KEY,
 	input [9:0] SW,
@@ -74,26 +74,38 @@ module shot_clock (
 	);
 	
 	initial seconds = 24;
+	reg paused = 0;
+	reg key1_prev = 1;
+	reg lessThanTen = 0;
 	
 	always @(posedge MAX10_CLK1_50) begin
+		key1_prev <= KEY[1];
 	
 		if (reset) begin
 			if (SW[0] == 1)
 				seconds <= 30;
 			else
 				seconds <= 24;
+			paused <= 0;
 		end
-		else if (one_sec_tick == 1 && seconds != 0) begin
-			seconds <= seconds - 1;
+		else begin
+		
+			if (key1_prev == 1 && KEY[1] == 0)
+				paused <= ~paused;
+				
+			if (one_sec_tick == 1 && seconds != 0 && paused == 0) begin
+				seconds <= seconds - 1;
+			end
 		end
 	end
+	
 	
 	assign tens = seconds/10;
 	assign ones = seconds%10;
 	
 	SevenSegment seg_ones(.digit(ones), .segments(HEX0[6:0]));
 	
-	SevenSegment seg_tens(.digit(tens), .segments(HEX1[6:0]));
+	SevenSegment seg_tens(.digit(tens == 0 ? 4'd15 : tens), .segments(HEX1[6:0]));
 	
 	assign HEX0[7] = 1'b1;
 	assign HEX1[7] = 1'b1;
