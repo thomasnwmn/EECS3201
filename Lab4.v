@@ -56,7 +56,7 @@ module shot_clock (
 	output [7:0] HEX2,
 	output [7:0] HEX3,
 	output [7:0] HEX4,
-	output [7:0] HEX5,
+	output [7:0] HEX5
 );
 
 	wire reset;
@@ -64,6 +64,8 @@ module shot_clock (
 	reg [4:0] seconds;
 	wire [3:0] tens;
 	wire [3:0] ones;
+
+	assign reset = ~KEY[0];
 	
 	clock_divider div (
 		.clk (MAX10_CLK1_50),
@@ -81,7 +83,7 @@ module shot_clock (
 			else
 				seconds <= 24;
 		end
-		else if (one_Sec_tick == 1 && seconds != 0) begin
+		else if (one_sec_tick == 1 && seconds != 0) begin
 			seconds <= seconds - 1;
 		end
 	end
@@ -89,16 +91,16 @@ module shot_clock (
 	assign tens = seconds/10;
 	assign ones = seconds%10;
 	
-	sevenSegment(.digit(tens), .segments(HEX0[6:0]));
+	SevenSegment seg_ones(.digit(ones), .segments(HEX0[6:0]));
 	
-	sevenSegment(.digit(tens), .segments(HEX1[6:0]));
+	SevenSegment seg_tens(.digit(tens), .segments(HEX1[6:0]));
 	
 	assign HEX0[7] = 1'b1;
 	assign HEX1[7] = 1'b1;
 	
-	assign HEX2 = 8'b1111111;
-	assign HEX3 = 8'b1111111;
-	assign HEX4 = 8'b1111111;
-	assign HEX5 = 8'b1111111;
+	assign HEX2 = 8'b11111111;
+	assign HEX3 = 8'b11111111;
+	assign HEX4 = 8'b11111111;
+	assign HEX5 = 8'b11111111;
 	
 endmodule
