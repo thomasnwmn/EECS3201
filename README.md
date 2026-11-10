@@ -6,8 +6,12 @@ In this lab, I used simulation tools(ModelSim) and test bench files to simulate 
 #### Part 1
 This portion involved a full adder circuit with three inputs and simulating all eight cases (0-7 in binary).
 Each input lasts for ~20 nanoseconds on the test bench and the appropriate waveform is displayed on ModelSim.
+All of the inputs hit zero only once, during the first case.
 #### Part 2
-This portion involved a clock input, a binary input, 
+This portion involved a 50MHz clock input, a 1-bit binary input, and a 4-bit binary output.
+It implements a 4-bit up-down counter circuit, triggering on each positive edge of the clock, and counting up if the 1-bit binary input is 0, and counting down if its 1.
+I simulate 100 ns of the input at zero, starting at 0000, then swap to 200 ns of input at 1, and finish with 100 ns of input at 0.
+All of the inputs hit zero three times, at time 0, 200 and 400.
 
 ## [Lab 4](https://github.com/user-attachments/files/34509233/Lab4.pdf)
 In this lab, I had to use memory circuit elements, such as the RS Flip Flop to design a NBA shot clock.
